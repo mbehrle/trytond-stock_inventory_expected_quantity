@@ -20,20 +20,23 @@ class InventoryLine:
             Lot = pool.get('stock.lot')
         except KeyError:
             Lot = None
+
+        if not product:
+            return 0.0
+
         if isinstance(inventory, int):
             inventory = Inventory(inventory)
-
-        if (not inventory or not inventory.location
-                or (not product and not lot)):
+        if not inventory or not inventory.location:
             return 0.0
+
         with Transaction().set_context(stock_date_end=inventory.date):
             if Lot and lot:
                 pbl = Product.products_by_location(
                     [inventory.location.id], grouping=('product', 'lot'))
-                return pbl[(inventory.location.id, lot.product.id, lot.id)]
+                return pbl[(inventory.location.id, product, lot)]
             pbl = Product.products_by_location(
                 [inventory.location.id], grouping=('product',))
-            return pbl[(inventory.location.id, product.id)]
+            return pbl[(inventory.location.id, product)]
 
     @fields.depends('inventory', '_parent_inventory.date',
         '_parent_inventory.location', 'product', 'lot')
@@ -42,8 +45,10 @@ class InventoryLine:
             lot = self.lot
         except AttributeError:
             lot = None
-        return self._compute_expected_quantity(self.inventory, self.product,
-            lot)
+        return self._compute_expected_quantity(
+            self.inventory,
+            self.product.id if self.product else None,
+            lot.id if self.lot else None)
 
     @classmethod
     def create(cls, vlist):
