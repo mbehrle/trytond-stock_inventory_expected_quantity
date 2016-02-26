@@ -1,6 +1,5 @@
 # The COPYRIGHT file at the top level of this repository contains the full
 # copyright notices and license terms.
-from copy import copy
 from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
@@ -24,15 +23,17 @@ class InventoryLine:
         if isinstance(inventory, int):
             inventory = Inventory(inventory)
 
-        if not inventory or not inventory.location:
+        if (not inventory or not inventory.location
+                or (not product and not lot)):
             return 0.0
-        with Transaction().set_context(stock_date_end=inventory.date,
-                locations=[inventory.location.id]):
+        with Transaction().set_context(stock_date_end=inventory.date):
             if Lot and lot:
-                return Lot(lot).quantity
-            elif product:
-                return Product(product).quantity
-        return 0.0
+                pbl = Product.products_by_location(
+                    [inventory.location.id], grouping=('product', 'lot'))
+                return pbl[(inventory.location.id, lot.product.id, lot.id)]
+            pbl = Product.products_by_location(
+                [inventory.location.id], grouping=('product',))
+            return pbl[(inventory.location.id, product.id)]
 
     @fields.depends('inventory', '_parent_inventory.date',
         '_parent_inventory.location', 'product', 'lot')
