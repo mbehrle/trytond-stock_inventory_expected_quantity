@@ -12,6 +12,8 @@ Imports::
     >>> from dateutil.relativedelta import relativedelta
     >>> from decimal import Decimal
     >>> from proteus import config, Model, Wizard
+    >>> from trytond.modules.company.tests.tools import create_company, \
+    ...     get_company
     >>> today = datetime.date.today()
 
 Create database::
@@ -19,46 +21,21 @@ Create database::
     >>> config = config.set_trytond()
     >>> config.pool.test = True
 
-Install stock Module::
+Install stock_inventory_expected_quantity Module::
 
-    >>> Module = Model.get('ir.module.module')
+    >>> Module = Model.get('ir.module')
     >>> module, = Module.find([
     ...         ('name', '=', 'stock_inventory_expected_quantity')])
     >>> module.click('install')
     >>> module, = Module.find([('name', '=', 'stock_lot')])
     >>> module.click('install')
-    >>> Wizard('ir.module.module.install_upgrade').execute('upgrade')
+    >>> Wizard('ir.module.install_upgrade').execute('upgrade')
 
 Create company::
 
-    >>> Currency = Model.get('currency.currency')
-    >>> CurrencyRate = Model.get('currency.currency.rate')
-    >>> Company = Model.get('company.company')
-    >>> Party = Model.get('party.party')
-    >>> company_config = Wizard('company.company.config')
-    >>> company_config.execute('company')
-    >>> company = company_config.form
-    >>> party = Party(name='Dunder Mifflin')
-    >>> party.save()
-    >>> company.party = party
-    >>> currencies = Currency.find([('code', '=', 'USD')])
-    >>> if not currencies:
-    ...     currency = Currency(name='US Dollar', symbol='$', code='USD',
-    ...         rounding=Decimal('0.01'), mon_grouping='[3, 3, 0]',
-    ...         mon_decimal_point='.')
-    ...     currency.save()
-    ...     CurrencyRate(date=today + relativedelta(month=1, day=1),
-    ...         rate=Decimal('1.0'), currency=currency).save()
-    ... else:
-    ...     currency, = currencies
-    >>> company.currency = currency
-    >>> company_config.execute('add')
-    >>> company, = Company.find()
-
-Reload the context::
-
-    >>> User = Model.get('res.user')
-    >>> config._context = User.get_preferences(True, config.context)
+    >>> _ = create_company()
+    >>> company = get_company()
+    >>> party = company.party
 
 Get stock locations::
 
@@ -115,9 +92,7 @@ Fill storage::
     >>> incoming_move.to_location = storage_loc
     >>> incoming_move.planned_date = today
     >>> incoming_move.effective_date = today
-    >>> incoming_move.company = company
     >>> incoming_move.unit_price = Decimal('100')
-    >>> incoming_move.currency = currency
     >>> incoming_move.click('do')
     >>> incoming_move = StockMove()
     >>> incoming_move.product = product
@@ -128,9 +103,7 @@ Fill storage::
     >>> incoming_move.to_location = storage_loc
     >>> incoming_move.planned_date = today
     >>> incoming_move.effective_date = today
-    >>> incoming_move.company = company
     >>> incoming_move.unit_price = Decimal('100')
-    >>> incoming_move.currency = currency
     >>> incoming_move.click('do')
 
 Create an inventory and check expected quantity is computed::
