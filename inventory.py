@@ -21,7 +21,7 @@ class InventoryLine:
             Lot = pool.get('stock.lot')
         except KeyError:
             Lot = None
-        if isinstance(inventory, int):
+        if not isinstance(inventory, Inventory):
             inventory = Inventory(inventory)
 
         if not inventory or not inventory.location:
