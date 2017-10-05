@@ -29,10 +29,12 @@ class InventoryLine:
         if not inventory or not inventory.location:
             return 0.0
 
-        with Transaction().set_context(stock_date_end=inventory.date):
+        with Transaction().set_context(stock_date_end=inventory.date,
+                inactive_lots=True):
             if Lot and lot:
                 pbl = Product.products_by_location(
-                    [inventory.location.id], grouping=('product', 'lot'))
+                    [inventory.location.id], product_ids=[product],
+                    grouping=('product', 'lot'))
                 return pbl[(inventory.location.id, product, lot)]
             pbl = Product.products_by_location(
                 [inventory.location.id], grouping=('product',))
