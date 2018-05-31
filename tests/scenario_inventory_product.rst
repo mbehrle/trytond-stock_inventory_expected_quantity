@@ -87,8 +87,8 @@ Create an inventory::
     >>> inventory.location = storage_loc
     >>> line = inventory.lines.new()
     >>> line.product = product
-    >>> line.expected_quantity
-    0.0
+    >>> line.expected_quantity == 0.0
+    True
 
 Fill storage::
 
@@ -119,5 +119,5 @@ Create an inventory and check expected quantity is computed::
     >>> line, = inventory.lines
     >>> line.expected_quantity
     1.0
-    >>> line.quantity
-    0.0
+    >>> line.quantity == 0.0
+    True
