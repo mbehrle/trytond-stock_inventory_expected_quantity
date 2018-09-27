@@ -5,11 +5,11 @@ from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 
 __all__ = ['InventoryLine']
-__metaclass__ = PoolMeta
 
 
 class InventoryLine:
     __name__ = 'stock.inventory.line'
+    __metaclass__ = PoolMeta
 
     @staticmethod
     def _compute_expected_quantity(inventory, product, lot=None):
@@ -33,8 +33,8 @@ class InventoryLine:
                 inactive_lots=True):
             if Lot and lot:
                 pbl = Product.products_by_location(
-                    [inventory.location.id], product_ids=[product],
-                    grouping=('product', 'lot'))
+                    [inventory.location.id], grouping_filter=[[product], 
+                    [lot]], grouping=('product', 'lot'))
                 return pbl[(inventory.location.id, product, lot)]
             pbl = Product.products_by_location(
                 [inventory.location.id], grouping=('product',))
