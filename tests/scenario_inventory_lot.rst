@@ -47,7 +47,6 @@ Create products::
     >>> template.default_uom = unit
     >>> template.type = 'goods'
     >>> template.list_price = Decimal('300')
-    >>> template.cost_price = Decimal('80')
     >>> template.cost_price_method = 'average'
     >>> template.save()
     >>> product, = template.products

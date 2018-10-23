@@ -7,9 +7,8 @@ from trytond.transaction import Transaction
 __all__ = ['InventoryLine']
 
 
-class InventoryLine:
+class InventoryLine(metaclass=PoolMeta):
     __name__ = 'stock.inventory.line'
-    __metaclass__ = PoolMeta
 
     @staticmethod
     def _compute_expected_quantity(inventory, product, lot=None):
