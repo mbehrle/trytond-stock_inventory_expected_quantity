@@ -10,6 +10,12 @@ __all__ = ['InventoryLine']
 class InventoryLine(metaclass=PoolMeta):
     __name__ = 'stock.inventory.line'
 
+    @classmethod
+    def __setup__(cls):
+        super().__setup__()
+        if hasattr(cls, 'lot'):
+            cls.expected_quantity.on_change_with.add('lot')
+
     @staticmethod
     def _compute_expected_quantity(inventory, product, lot=None):
         pool = Pool()
@@ -32,7 +38,7 @@ class InventoryLine(metaclass=PoolMeta):
                 inactive_lots=True):
             if Lot and lot:
                 pbl = Product.products_by_location(
-                    [inventory.location.id], grouping_filter=[[product], 
+                    [inventory.location.id], grouping_filter=[[product],
                     [lot]], grouping=('product', 'lot'))
                 return pbl[(inventory.location.id, product, lot)]
             pbl = Product.products_by_location(
@@ -40,7 +46,7 @@ class InventoryLine(metaclass=PoolMeta):
             return pbl[(inventory.location.id, product)]
 
     @fields.depends('inventory', '_parent_inventory.date',
-        '_parent_inventory.location', 'product', 'lot')
+        '_parent_inventory.location', 'product')
     def on_change_with_expected_quantity(self):
         try:
             lot = self.lot
@@ -49,7 +55,7 @@ class InventoryLine(metaclass=PoolMeta):
         return self._compute_expected_quantity(
             self.inventory,
             self.product.id if self.product else None,
-            lot.id if self.lot else None)
+            lot.id if lot else None)
 
     @classmethod
     def create(cls, vlist):
