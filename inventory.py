@@ -37,7 +37,7 @@ class InventoryLine(metaclass=PoolMeta):
                 inactive_lots=True):
             if Lot and lot:
                 pbl = Product.products_by_location(
-                    [inventory.location.id], grouping_filter=[[product], 
+                    [inventory.location.id], grouping_filter=[[product],
                     [lot]], grouping=('product', 'lot'))
                 return pbl[(inventory.location.id, product, lot)]
             pbl = Product.products_by_location(
