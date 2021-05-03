@@ -54,7 +54,7 @@ class InventoryLine(metaclass=PoolMeta):
         return self._compute_expected_quantity(
             self.inventory,
             self.product.id if self.product else None,
-            lot.id if self.lot else None)
+            lot.id if lot else None)
 
     @classmethod
     def create(cls, vlist):
