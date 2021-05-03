@@ -10,6 +10,11 @@ __all__ = ['InventoryLine']
 class InventoryLine(metaclass=PoolMeta):
     __name__ = 'stock.inventory.line'
 
+    @classmethod
+    def __setup__(cls):
+        super().__setup__()
+        cls.expected_quantity.states['invisible'] = False
+
     @staticmethod
     def _compute_expected_quantity(inventory, product, lot=None):
         pool = Pool()
