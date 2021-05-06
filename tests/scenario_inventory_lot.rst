@@ -2,10 +2,6 @@
 Stock Inventory Expected Quantity With Lot Scenario
 ===================================================
 
-=============
-General Setup
-=============
-
 Imports::
 
     >>> import datetime
