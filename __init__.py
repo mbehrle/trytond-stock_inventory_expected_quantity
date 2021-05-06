@@ -3,6 +3,8 @@
 from trytond.pool import Pool
 from . import inventory
 
+__all__ = ['register']
+
 
 def register():
     Pool.register(
