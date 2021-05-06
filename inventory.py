@@ -20,10 +20,6 @@ class InventoryLine(metaclass=PoolMeta):
         pool = Pool()
         Inventory = pool.get('stock.inventory')
         Product = pool.get('product.product')
-        try:
-            Lot = pool.get('stock.lot')
-        except KeyError:
-            Lot = None
 
         if not product:
             return 0.0
@@ -34,15 +30,13 @@ class InventoryLine(metaclass=PoolMeta):
             return 0.0
 
         with Transaction().set_context(stock_date_end=inventory.date,
-                inactive_lots=True):
-            if Lot and lot:
-                pbl = Product.products_by_location(
-                    [inventory.location.id], grouping_filter=[[product],
-                    [lot]], grouping=('product', 'lot'))
-                return pbl[(inventory.location.id, product, lot)]
+                inactive_lots=True, product=product, lot=lot):
+            grouping, grouping_filter, _ = (
+                inventory.location._get_quantity_grouping())
             pbl = Product.products_by_location(
-                [inventory.location.id], grouping=('product',))
-            return pbl[(inventory.location.id, product)]
+                [inventory.location.id], grouping_filter=grouping_filter,
+                grouping=('product', 'lot'))
+            return pbl[(inventory.location.id, product, lot)]
 
     @fields.depends('inventory', '_parent_inventory.date',
         '_parent_inventory.location', 'product', 'lot')
