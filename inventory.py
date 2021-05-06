@@ -31,15 +31,16 @@ class InventoryLine(metaclass=PoolMeta):
         if not inventory or not inventory.location:
             return 0.0
 
+        grouping = Inventory.grouping()
         with Transaction().set_context(stock_date_end=inventory.date,
                 inactive_lots=True):
-            if Lot and lot:
-                pbl = Product.products_by_location(
-                    [inventory.location.id], grouping_filter=[[product],
-                    [lot]], grouping=('product', 'lot'))
+            if Lot:
+                grouping_filter = ([product],)
+                pbl = Product.products_by_location([inventory.location.id],
+                    grouping_filter=grouping_filter, grouping=grouping)
                 return pbl[(inventory.location.id, product, lot)]
-            pbl = Product.products_by_location(
-                [inventory.location.id], grouping=('product',))
+            pbl = Product.products_by_location([inventory.location.id],
+                grouping=grouping)
             return pbl[(inventory.location.id, product)]
 
     @fields.depends('inventory', '_parent_inventory.date',
