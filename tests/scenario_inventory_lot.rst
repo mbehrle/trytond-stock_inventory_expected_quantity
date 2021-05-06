@@ -98,6 +98,7 @@ Create an inventory and check expected quantity is computed::
 
     >>> inventory = Inventory()
     >>> inventory.location = storage_loc
+    >>> inventory.empty_quantity = 'keep'
     >>> line = inventory.lines.new()
     >>> line.product = product
     >>> line.expected_quantity
@@ -105,10 +106,12 @@ Create an inventory and check expected quantity is computed::
     >>> line.lot = lot
     >>> line.expected_quantity
     1.0
+    >>> inventory.save()
+    >>> line, = inventory.lines
     >>> line.quantity = 0.0
     >>> inventory.save()
     >>> line, = inventory.lines
     >>> line.expected_quantity
     1.0
-    >>> line.quantity == 0.0
-    True
+    >>> line.quantity
+    0.0
