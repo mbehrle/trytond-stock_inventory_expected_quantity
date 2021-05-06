@@ -45,7 +45,10 @@ for dep in info.get('depends', []):
                 major_version, minor_version + 1))
 requires.append(get_require_version('trytond'))
 
-tests_require = [get_require_version('proteus')]
+tests_require = [
+    get_require_version('proteus'),
+    get_require_version('trytond-stock_lot'),
+    ]
 
 setup(name='%s_%s' % (PREFIX, MODULE),
     version=version,
