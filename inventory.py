@@ -45,7 +45,7 @@ class InventoryLine(metaclass=PoolMeta):
             return pbl[(inventory.location.id, product)]
 
     @fields.depends('inventory', '_parent_inventory.date',
-        '_parent_inventory.location', 'product')
+        '_parent_inventory.location', 'product', 'lot')
     def on_change_with_expected_quantity(self):
         try:
             lot = self.lot
