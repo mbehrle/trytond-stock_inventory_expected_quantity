@@ -12,8 +12,6 @@ class InventoryLine(metaclass=PoolMeta):
     def __setup__(cls):
         super().__setup__()
         cls.expected_quantity.states['invisible'] = False
-        if hasattr(cls, 'lot'):
-            cls.expected_quantity.on_change_with.add('lot')
 
     @staticmethod
     def _compute_expected_quantity(inventory, product, lot=None):
@@ -65,3 +63,16 @@ class InventoryLine(metaclass=PoolMeta):
                     values.get('lot'))
 
         return super(InventoryLine, cls).create(vlist)
+
+
+class InventoryLineLot(metaclass=PoolMeta):
+    __name__ = 'stock.inventory.line'
+
+    @fields.depends('lot', methods=['on_change_with_expected_quantity'])
+    def on_change_with_expected_quantity(self):
+        super().on_change_with_expected_quantity()
+
+    @classmethod
+    def __setup__(cls):
+        super().__setup__()
+        cls.expected_quantity.on_change_with.add('lot')

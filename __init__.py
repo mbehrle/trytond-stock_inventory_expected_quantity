@@ -10,3 +10,7 @@ def register():
     Pool.register(
         inventory.InventoryLine,
         module='stock_inventory_expected_quantity', type_='model')
+    Pool.register(
+        inventory.InventoryLineLot,
+        depends=['stock_lot'],
+        module='stock_inventory_expected_quantity', type_='model')
