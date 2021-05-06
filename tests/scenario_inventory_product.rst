@@ -76,6 +76,7 @@ Create an inventory and check expected quantity is computed::
 
     >>> inventory = Inventory()
     >>> inventory.location = storage_loc
+    >>> inventory.empty_quantity = 'keep'
     >>> line = inventory.lines.new()
     >>> line.product = product
     >>> line.expected_quantity
