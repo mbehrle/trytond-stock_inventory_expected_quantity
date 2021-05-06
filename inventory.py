@@ -11,6 +11,7 @@ class InventoryLine(metaclass=PoolMeta):
     @classmethod
     def __setup__(cls):
         super().__setup__()
+        cls.expected_quantity.states['invisible'] = False
         if hasattr(cls, 'lot'):
             cls.expected_quantity.on_change_with.add('lot')
 
