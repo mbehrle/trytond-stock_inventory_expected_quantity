@@ -68,7 +68,7 @@ Create an inventory::
     >>> line.expected_quantity == 0.0
     True
 
-Fill storage::
+Fill storage: Two moves with lots and quantity 1::
 
     >>> StockMove = Model.get('stock.move')
     >>> incoming_move = StockMove()
@@ -94,6 +94,19 @@ Fill storage::
     >>> incoming_move.unit_price = Decimal('100')
     >>> incoming_move.click('do')
 
+Fill storage: One move without lot and quantity 10::
+
+    >>> incoming_move = StockMove()
+    >>> incoming_move.product = product
+    >>> incoming_move.uom = unit
+    >>> incoming_move.quantity = 10
+    >>> incoming_move.from_location = supplier_loc
+    >>> incoming_move.to_location = storage_loc
+    >>> incoming_move.planned_date = today
+    >>> incoming_move.effective_date = today
+    >>> incoming_move.unit_price = Decimal('100')
+    >>> incoming_move.click('do')
+
 Create an inventory and check expected quantity is computed::
 
     >>> inventory = Inventory()
@@ -102,12 +115,17 @@ Create an inventory and check expected quantity is computed::
     >>> line = inventory.lines.new()
     >>> line.product = product
     >>> line.expected_quantity
-    2.0
+    10.0
     >>> line.lot = lot
     >>> line.expected_quantity
     1.0
+
+Save the inventory and check if the result of expected quantity remains the same::
+
     >>> inventory.save()
     >>> line, = inventory.lines
+    >>> line.expected_quantity
+    1.0
     >>> line.quantity = 0.0
     >>> inventory.save()
     >>> line, = inventory.lines
