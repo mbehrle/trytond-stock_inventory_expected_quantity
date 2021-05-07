@@ -71,7 +71,7 @@ class InventoryLineLot(metaclass=PoolMeta):
 
     @fields.depends('lot')
     def on_change_with_expected_quantity(self):
-        super().on_change_with_expected_quantity()
+        return super().on_change_with_expected_quantity()
 
     @classmethod
     def __setup__(cls):
